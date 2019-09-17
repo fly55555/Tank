@@ -41,13 +41,11 @@ namespace Tank.App
 
         public override void KeyBordCallBack(KeyEventArgs e)
         {
-
             base.KeyBordCallBack(e);
         }
 
         public override void MouseCallBack(MouseEventArgs e)
         {
-
             base.MouseCallBack(e);
         }
 
