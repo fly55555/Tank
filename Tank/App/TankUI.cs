@@ -61,13 +61,12 @@ namespace Tank.App
 
             var rectangleGeometry  = new RectangleGeometry(D2dFactory, new RawRectangleF(128, 128, Mainform.ClientSize.Width - 128 * 2, Mainform.ClientSize.Height - 128 * 2));
 
-
             var taskId = RenderQueneAdd(() =>
             {
 
                 //D2dRenderTarget.DrawTextLayout(new Vector2(0, 0), textLayout, SolidColorBrush_[Color.Red], DrawTextOptions.None);
                 //solidColorBrush.Color = new Color4(1, 1, 1, (float)Math.Abs(Math.Cos(stopwatch.ElapsedMilliseconds * .001)));
-                D2dRenderTarget.FillGeometry(rectangleGeometry, SolidColorBrush_[Color.Red], null);
+                D2dRenderTarget.FillGeometry(rectangleGeometry, DefaultBrush, null);
             });
 
 

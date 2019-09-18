@@ -46,7 +46,8 @@ namespace Tank.Core
 
         public List<RenderQuene_2D> RenderQuene { get; set; }
 
-        public Dictionary<Color, SolidColorBrush> SolidColorBrush_ { get; set; }
+        public SolidColorBrush DefaultBrush { get; set; }
+        //public Dictionary<Color, SolidColorBrush> SolidColorBrush_ { get; set; }
 
 
         /// <summary>
@@ -80,16 +81,19 @@ namespace Tank.Core
             }
 
             //初始化大部分单色画刷
-            var color = new Color();
-            SolidColorBrush_ = new Dictionary<Color, SolidColorBrush>();
-            foreach (var item in color.GetType().GetFields())
-            {
-                if (item.IsInitOnly && item.IsPublic && item.IsStatic)
-                {
-                    var row = (Color)item.GetValue(color);
-                    if (!SolidColorBrush_.ContainsKey(row)) SolidColorBrush_.Add(row, new SolidColorBrush(D2dRenderTarget, row));
-                }
-            }
+            //var color = new Color();
+            //SolidColorBrush_ = new Dictionary<Color, SolidColorBrush>();
+            //foreach (var item in color.GetType().GetFields())
+            //{
+            //    if (item.IsInitOnly && item.IsPublic && item.IsStatic)
+            //    {
+            //        var row = (Color)item.GetValue(color);
+            //        if (!SolidColorBrush_.ContainsKey(row)) SolidColorBrush_.Add(row, new SolidColorBrush(D2dRenderTarget, row));
+            //    }
+            //}
+            DefaultBrush = new SolidColorBrush(D2dRenderTarget, Color.White);
+
+
         }
 
         /// <summary>
