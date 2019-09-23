@@ -41,13 +41,30 @@ namespace Tank.Core
 
         public RenderTargetView BackBufferView { get; set; }
 
-
         public List<Resource_2D> Resources { get; set; }
 
         public List<RenderQuene_2D> RenderQuene { get; set; }
 
         public SolidColorBrush DefaultBrush { get; set; }
         //public Dictionary<Color, SolidColorBrush> SolidColorBrush_ { get; set; }
+
+
+        /************************************************/
+
+
+        private readonly DemoTime Clock = new DemoTime();
+
+        public float FramePerSecond { get; private set; }
+
+        public float FrameDelta { get; set; }
+
+
+
+        private float _frameAccumulator { get; set; }
+
+        private int _frameCount { get; set; }
+
+
 
 
         /// <summary>
@@ -184,7 +201,7 @@ namespace Tank.Core
             }
         }
 
-        private void ProcessRender()
+        private void Render()
         {
             lock (RenderQuene)
             {
@@ -198,6 +215,31 @@ namespace Tank.Core
 
         public virtual void Draw()
         {
+
+        }
+
+        public virtual void Update(DemoTime time)
+        {
+
+        }
+
+
+        private void OnUpDate()
+        {
+            FrameDelta = (float)Clock.Update();
+            Update(Clock);
+
+                        _frameAccumulator += FrameDelta;
+            ++_frameCount;
+            if (_frameAccumulator >= 1.0f)
+            {
+                FramePerSecond = _frameCount / _frameAccumulator;
+
+                Mainform.Text =" - FPS: " + FramePerSecond;
+                _frameAccumulator = 0.0f;
+                _frameCount = 0;
+            }
+
 
         }
 
@@ -216,12 +258,14 @@ namespace Tank.Core
 
         public void Run()
         {
+            Clock.Start();
             RenderLoop.Run(Mainform, () =>
             {
                 D2dRenderTarget.BeginDraw();
                 D2dRenderTarget.Clear(Color.Black);
 
-                ProcessRender();
+                OnUpDate();
+                Render();
                 Draw();
 
 

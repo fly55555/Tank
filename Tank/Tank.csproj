@@ -152,6 +152,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\TankUI.cs" />
+    <Compile Include="App\TargetTypes\Tank.cs" />
+    <Compile Include="Core\DemoTime.cs" />
     <Compile Include="Core\Direct2D.cs" />
     <Compile Include="Core\DrawFrom.cs">
       <SubType>Form</SubType>
@@ -189,6 +191,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
