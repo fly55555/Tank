@@ -1,9 +1,11 @@
 ﻿using SharpDX;
 using SharpDX.Direct2D1;
+using SharpDX.DirectInput;
 using SharpDX.DirectWrite;
 using SharpDX.Mathematics.Interop;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,16 +16,20 @@ namespace Tank.App
 {
     public class TankUI : Direct2D
     {
+
         public int WinX, WinY;
 
-        public RectangleGeometry RenderTank;
+        public float GlobalSpeed;
 
-        public List<TargetTypes.Tank> Tanks;
+        public List<TargetTypes.BLock> Tanks;
+
+        public TargetTypes.RECT FormBoxRange;
+
 
 
         public TankUI(string formName = "Default") : base(formName)
         {
-            Tanks = new List<TargetTypes.Tank>();
+            Tanks = new List<TargetTypes.BLock>();
             CreateResource();
         }
 
@@ -33,8 +39,31 @@ namespace Tank.App
         }
 
 
-        public override void Update(DemoTime demoTime)
+        public override void Update(DemoTime demoTime, KeyboardState key)
         {
+            var player_01 = Tanks.Where(row => row.Name == "P_01").FirstOrDefault();
+
+            if (key.IsPressed(Key.Left))
+            {
+                player_01.Move(-GlobalSpeed * player_01.Speed, 0, FormBoxRange);
+            }
+
+            if (key.IsPressed(Key.Up))
+            {
+                player_01.Move(0, -GlobalSpeed * player_01.Speed, FormBoxRange);
+            }
+
+            if (key.IsPressed(Key.Right))
+            {
+                player_01.Move(GlobalSpeed * player_01.Speed, 0, FormBoxRange);
+            }
+
+            if (key.IsPressed(Key.Down))
+            {
+
+                player_01.Move(0, GlobalSpeed * player_01.Speed, FormBoxRange);
+            }
+
 
         }
 
@@ -42,19 +71,24 @@ namespace Tank.App
         {
             base.Draw();
 
-            D2dRenderTarget.DrawRectangle(new RawRectangleF(20, 20, Mainform.ClientSize.Width - 20, Mainform.ClientSize.Height - 20), DefaultBrush);
+            using (var formBox = new RectangleGeometry(D2dFactory, (RawRectangleF)FormBoxRange))
+            {
+                DefaultBrush.Color = Color.Black;
+                D2dRenderTarget.FillGeometry(formBox, DefaultBrush, null);
+            }
+
+            //D2dRenderTarget.DrawRectangle(new RawRectangleF(FormBoxRange.Left, FormBoxRange.Top, FormBoxRange.Right, FormBoxRange.Bottom), DefaultBrush);
 
             //D2dRenderTarget.FillGeometry(RenderTank, DefaultBrush, null);
 
             foreach (var item in Tanks)
             {
-                using (var defTank = new RectangleGeometry(D2dFactory, new RawRectangleF(item.Rect.Left, item.Rect.Top, item.Rect.Right, item.Rect.Bottom)))
+                using (var defTank = new RectangleGeometry(D2dFactory, (RawRectangleF)item.Rect))
                 {
+                    DefaultBrush.Color = (Color)item.Color;
                     D2dRenderTarget.FillGeometry(defTank, DefaultBrush, null);
                 }
             }
-
-
 
 
 
@@ -63,8 +97,36 @@ namespace Tank.App
 
         }
 
+
         public override void KeyBordCallBack(KeyEventArgs e)
         {
+            //var player_01 = Tanks.Where(row => row.Name == "P_01").FirstOrDefault();
+
+            //switch (e.KeyCode)
+            //{
+            //    case Keys.Left:
+            //        {
+            //            player_01.Move(-GlobalSpeed * player_01.Speed, 0);
+            //        }
+            //        break;
+            //    case Keys.Up:
+            //        {
+            //            player_01.Move(0, -GlobalSpeed * player_01.Speed);
+            //        }
+            //        break;
+            //    case Keys.Right:
+            //        {
+            //            player_01.Move(GlobalSpeed * player_01.Speed, 0);
+            //        }
+            //        break;
+            //    case Keys.Down:
+            //        {
+            //            player_01.Move(0, GlobalSpeed * player_01.Speed);
+            //        }
+            //        break;
+            //    default:
+            //        break;
+            //}
             base.KeyBordCallBack(e);
         }
 
@@ -75,14 +137,14 @@ namespace Tank.App
 
         public void CreateResource()
         {
+            GlobalSpeed = 0.01f;
             WinX = Mainform.ClientSize.Width;
             WinY = Mainform.ClientSize.Height;
-            RenderTank = new RectangleGeometry(D2dFactory, new RawRectangleF(WinX / 2 - 20, WinY - 60, WinX / 2 + 20, WinY - 20));
+            FormBoxRange = new TargetTypes.RECT(20, 20, WinX - 20, WinY - 20);
 
-            Tanks.Add(new TargetTypes.Tank("P_01", new TargetTypes.RECT(WinX / 2 - 20, WinY - 60, WinX / 2 + 20, WinY - 20), 1, (long)Color.Yellow));
+            Tanks.Add(new TargetTypes.BLock("P_01", new TargetTypes.RECT(WinX / 2 - 80, WinY - 60, WinX / 2 - 40, WinY - 20), 1, (long)Color.Yellow));
 
-
-
+            Tanks.Add(new TargetTypes.BLock("P_02", new TargetTypes.RECT(WinX / 2 - 20, WinY - 60, WinX / 2 + 20, WinY - 20), 1, (long)Color.Green));
 
 
             //TextFormat textFormat = new TextFormat(FactoryDWrite, "宋体", 128) { TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Center };

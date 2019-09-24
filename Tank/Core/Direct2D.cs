@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using static Tank.Core.Direct2D;
 using System.Windows.Forms;
 using static Tank.Core.Exterd;
+using SharpDX.DirectInput;
 
 namespace Tank.Core
 {
@@ -65,6 +66,10 @@ namespace Tank.Core
         private int _frameCount { get; set; }
 
 
+        /************************************************/
+
+        private Keyboard _keybord { get; set; }
+
 
 
         /// <summary>
@@ -73,6 +78,8 @@ namespace Tank.Core
         /// <param name="formName"></param>
         public Direct2D(string formName = "Default")
         {
+            _keybord = new Keyboard(new DirectInput());
+            _keybord.Acquire();
 
             RenderQuene = new List<RenderQuene_2D>();
             Resources = new List<Resource_2D>();
@@ -97,17 +104,6 @@ namespace Tank.Core
                 D2dRenderTarget = new RenderTarget(D2dFactory, surface, new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied)));
             }
 
-            //初始化大部分单色画刷
-            //var color = new Color();
-            //SolidColorBrush_ = new Dictionary<Color, SolidColorBrush>();
-            //foreach (var item in color.GetType().GetFields())
-            //{
-            //    if (item.IsInitOnly && item.IsPublic && item.IsStatic)
-            //    {
-            //        var row = (Color)item.GetValue(color);
-            //        if (!SolidColorBrush_.ContainsKey(row)) SolidColorBrush_.Add(row, new SolidColorBrush(D2dRenderTarget, row));
-            //    }
-            //}
             DefaultBrush = new SolidColorBrush(D2dRenderTarget, Color.White);
 
 
@@ -218,7 +214,7 @@ namespace Tank.Core
 
         }
 
-        public virtual void Update(DemoTime time)
+        public virtual void Update(DemoTime time, KeyboardState key)
         {
 
         }
@@ -226,16 +222,30 @@ namespace Tank.Core
 
         private void OnUpDate()
         {
-            FrameDelta = (float)Clock.Update();
-            Update(Clock);
+            //if (keyStatus.PressedKeys.Count > 0)
+            //{
+            //    Debug.WriteLine(keyStatus.PressedKeys[0].ToString());
+            //}
 
-                        _frameAccumulator += FrameDelta;
+            //keybord.Properties.BufferSize = 128;
+            //keybord.Poll();
+            //var datas = keybord.GetBufferedData();
+            //foreach (var state in datas)
+            //    Debug.WriteLine(state);
+
+
+            var keyStatus = _keybord.GetCurrentState();
+            FrameDelta = (float)Clock.Update();
+            Update(Clock, keyStatus);
+
+            _frameAccumulator += FrameDelta;
             ++_frameCount;
             if (_frameAccumulator >= 1.0f)
             {
                 FramePerSecond = _frameCount / _frameAccumulator;
 
-                Mainform.Text =" - FPS: " + FramePerSecond;
+                Debug.WriteLine($"FPS:[{FramePerSecond}]");
+
                 _frameAccumulator = 0.0f;
                 _frameCount = 0;
             }
@@ -262,7 +272,7 @@ namespace Tank.Core
             RenderLoop.Run(Mainform, () =>
             {
                 D2dRenderTarget.BeginDraw();
-                D2dRenderTarget.Clear(Color.Black);
+                D2dRenderTarget.Clear(Color.Gray);
 
                 OnUpDate();
                 Render();
